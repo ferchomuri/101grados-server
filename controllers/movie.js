@@ -1,16 +1,21 @@
-const db = require("../models");
-const actor = require("../models/actor");
-const Movie = db.movie;
-const Op = db.Sequelize.Op;
+const models = require("../models");
+const Movie = models.movie;
+const Actor = models.actor;
 
-exports.create = async (req, res) => {
+const create = async (req, res) => {
   if (!req.body.name) {
     res.status(400).send({
       message: "El contenido no puede ser vacio",
     });
     return;
   }
-  const {name, duration, genre, synopsis} = req.body;
+  if (!req.body.duration) {
+    res.status(400).send({
+      message: "El contenido no puede ser vacio",
+    });
+    return;
+  }
+  const {name, duration, genre, synopsis, idActor, nameActor} = req.body;
 
   try {
     const movie = await Movie.create({
@@ -18,7 +23,11 @@ exports.create = async (req, res) => {
         duration: duration,
         genre: genre,
         synopsis: synopsis,
-      });
+        casting: casting
+      },{
+        include: [casting]
+      }
+      );
       return res.status(200).json(Movie);
   } catch (error) {
     console.log(error);
@@ -35,8 +44,14 @@ exports.create = async (req, res) => {
     }*/
 
 
-exports.findAll = (req, res) => {
-  Movie.findAll({})
+const findAll = async (req, res) => {
+  Movie.findAll({
+    include: {
+      model: Actor,
+      as: "elenco",
+      attributes: ['name']
+    }
+  })
     .then((data) => {
       res.send(data);
     })
@@ -47,7 +62,7 @@ exports.findAll = (req, res) => {
     });
 };
 
-exports.findOne = (req, res) => {
+const findOne = async (req, res) => {
   const id = req.params.id;
 
   Movie.findByPk(id)
@@ -61,7 +76,7 @@ exports.findOne = (req, res) => {
     });
 };
 
-exports.update = (req, res) => {
+const update = async (req, res) => {
   const id = req.params.id;
 
   Movie.update(req.body, {
@@ -85,5 +100,5 @@ exports.update = (req, res) => {
     });
 };
 
-exports.delete = (req, res) => {};
+module.exports = {create, findAll, findOne, update};
 

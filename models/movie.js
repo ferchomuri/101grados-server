@@ -11,7 +11,6 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.belongsToMany(models.actor, {through: "movie_actor"});
     }
   };
   movie.init({
@@ -23,5 +22,11 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'movie',
   });
-  return movie;
+
+movie.hasMany(Actor, {
+  foreignKey: 'id',
+  sourceKey: 'id'
+});
+
+  return movie, Actor;
 };

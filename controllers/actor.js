@@ -1,32 +1,28 @@
-const db = require("../models");
-const Actor = db.actor;
-const Op = db.Sequelize.Op;
-require("../models/asociations");
+const models = require("../models");
+const Actor = models.actor;
 
-exports.create = (req, res) =>{
-    if (!req.body.title) {
+const create = async (req, res) =>{
+    if (!req.body.name) {
         res.status(400).send({
             message: "The conten wasnt be empty"
         });
         return;
     };
-
-    const actor = {
-        name: req.body.name,
-        age: req.body.age,
-        photo: req.body.photo
+    const {name, age, photo} = req.body;
+    try {
+        const actor = await Actor.create({
+            name: name,
+            age, age,
+            photo: photo
+        });
+        return res.status(200).json(Actor);
+    } catch (error) {
+        console.log(error);
+        return res.status(505).json({ msg: "Sorry, an error ocurred." });
+        };
     };
 
-    Actor.create(actor)
-    .then(data => {
-        res.status(500).send({
-            message:
-            err.message || "Some error occurred while creating the Actor" 
-        });
-    });
-};
-
-exports.findAll = (req, res) => {
+const findAll = async (req, res) => {
     Actor.findAll({}).then(data => {
         res.send(data);
     })
@@ -38,7 +34,7 @@ exports.findAll = (req, res) => {
     });
 };
 
-exports.findOne = (req, res) => {
+const findOne = async (req, res) => {
     const id = req.params.id;
 
     Actor.findByPk(id)
@@ -52,7 +48,7 @@ exports.findOne = (req, res) => {
     });
 };
 
-exports.update = (req, res) => {
+const update = async (req, res) => {
   const id = req.params.id;
 
   Actor.update(req.body, {
@@ -75,6 +71,4 @@ exports.update = (req, res) => {
   });
 };
 
-exports.delete = (req, res) => {
-  
-};
+module.exports = { create, findAll, findOne, update };

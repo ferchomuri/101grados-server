@@ -1,15 +1,10 @@
-module.exports = app => {
-    const movies = require("../controllers/movie");
+var express = require('express');
+var router = express.Router();
+var movie = require('../controllers/movie');
 
-    var router = require("express").Router();
+router.post("/", movie.create);
+router.get("/", movie.findAll);
+router.get("/:id", movie.findOne);
+router.put("/:id", movie.update);
 
-    router.post("/", movies.create);
-
-    router.get("/", movies.findAll);
-
-    router.get("/:id", movies.findOne);
-
-    router.put("/:id", movies.update);
-
-    app.use('/movies', router);
-}
+module.exports = router;
