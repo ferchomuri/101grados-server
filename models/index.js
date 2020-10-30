@@ -33,5 +33,19 @@ Object.keys(db).forEach(modelName => {
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
+/*
+db.movies = require("./movie")(sequelize, Sequelize);
+db.actors = require("./actor")(sequelize, Sequelize);
 
+db.actors.belongsToMany(db.movies, {
+  through: "actors_movie",
+  as: "movies",
+  foreignKey: "id",
+});
+db.movies.belongsToMany(db.actors, {
+  through: "actors_movie",
+  as: "actors",
+  foreignKey: "id",
+});
+*/
 module.exports = db;

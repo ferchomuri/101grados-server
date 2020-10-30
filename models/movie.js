@@ -23,10 +23,5 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'movie',
   });
 
-movie.hasMany(Actor, {
-  foreignKey: 'id',
-  sourceKey: 'id'
-});
-
-  return movie, Actor;
+  return movie;
 };

@@ -9,48 +9,31 @@ const create = async (req, res) => {
     });
     return;
   }
-  if (!req.body.duration) {
-    res.status(400).send({
-      message: "El contenido no puede ser vacio",
-    });
-    return;
-  }
-  const {name, duration, genre, synopsis, idActor, nameActor} = req.body;
+  const { name, duration, genre, synopsis, actorId } = req.body;
 
   try {
-    const movie = await Movie.create({
+    const movie = await Movie.create(
+      {
         name: name,
         duration: duration,
         genre: genre,
-        synopsis: synopsis,
-        casting: casting
-      },{
-        include: [casting]
-      }
-      );
-      return res.status(200).json(Movie);
+        synopsis: synopsis
+      },
+      /*{
+        include: [casting],
+      }*/
+    );
+    //addActor(actorId, movie.id);
+    return res.status(200).json(Movie);
+
   } catch (error) {
     console.log(error);
     return res.status(505).json({ msg: "Sorry, an error ocurred." });
-    };
-  };
-
-  /*const actors = req.body.actors;
-    if(req.body.actors){
-        actors.forEach(element => {
-            movie1.addActor(element);    
-        });
-        
-    }*/
-
+  }
+};
 
 const findAll = async (req, res) => {
   Movie.findAll({
-    include: {
-      model: Actor,
-      as: "elenco",
-      attributes: ['name']
-    }
   })
     .then((data) => {
       res.send(data);
@@ -100,5 +83,24 @@ const update = async (req, res) => {
     });
 };
 
-module.exports = {create, findAll, findOne, update};
+async function addActor (actorId, movieId) {
+  try {
+    const movie = await Movie.findByPk(movieId);
+    if (!movie) {
+      console.log("Movie not found");
+      return null;
+    }
+    const actor = await Actor.findByPk(actorId);
+    if (!actor) {
+      console.log("Movie not found");
+      return null;
+    }
+    movie.addActor(actor);
+    console.log(`actor id ${actor.id} - movie id ${movie.id}`);
+    return movie;
+  } catch (error) {
+    console.log(">> Error while adding Tutorial to Tag: ", error);
+  }
+};
 
+module.exports = { create, findAll, findOne, update };
